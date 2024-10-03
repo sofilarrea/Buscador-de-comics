@@ -1,6 +1,4 @@
-@import url(/css/mobile.css);
-@import url('./tablet.css') screen and (min-width: 768px);
-@import url('./desktop.css') screen and (min-width: 1024px);
+@import url('/assets/css/mobile.css');
 
 
 @font-face {
