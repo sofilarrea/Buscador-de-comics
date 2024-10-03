@@ -1,0 +1,24 @@
+.logo {
+    background-color: black; 
+    padding: 20px; 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.logo-h3 {
+    background-color: red; 
+    padding: 16px 19px;   
+    text-align: center; /* Centra el texto dentro del rectángulo */
+}
+
+.logo-h3 p {
+    color: white; 
+    margin: 0; 
+    font-size: 16px; 
+    font-family: 'KOMIKAX', sans-serif; 
+}
+.hero figure img{
+    height: 70vh;
+    width: 100%;
+}
