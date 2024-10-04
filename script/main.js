@@ -4,14 +4,14 @@ const apiKey = '65db027dcb3242c298c3482a2b3f65d4';
 const ts = '1';
 const hash = '32e7770ba72dfc622c150d2fc1e02ac7';
 
-let comics = []; // Variable global para almacenar los cómics
+let comics = []; 
 let currentPage = 0;
 const comicsPerPage = 20;
-let totalComics = 0; // Variable para almacenar el total de cómics
+let totalComics = 0; 
 
 // Obtener cómics
 function fetchComics() {
-    const offset = currentPage * comicsPerPage; // Calcular el offset
+    const offset = currentPage * comicsPerPage; 
 
     fetch(`${urlApi}${urlMovies}?ts=${ts}&apikey=${apiKey}&hash=${hash}&limit=${comicsPerPage}&offset=${offset}`, {
         method: 'GET',
@@ -21,9 +21,9 @@ function fetchComics() {
     })
     .then(response => response.json())
     .then(data => {
-        totalComics = data.data.total; // Guardar el total de cómics
+        totalComics = data.data.total; 
         displayComics(data.data.results);
-        updatePagination(); // Actualiza la paginación
+        updatePagination(); 
     })
     .catch(error => console.log(error));
 }
@@ -31,7 +31,7 @@ function fetchComics() {
 // Función para mostrar los cómics
 function displayComics(comics) {
     const comicsContainer = document.getElementById('comics-container');
-    comicsContainer.innerHTML = ''; // Limpiar el contenedor
+    comicsContainer.innerHTML = ''; 
 
     comics.forEach(comic => {
         const comicCard = createComicCard(comic);
@@ -43,7 +43,7 @@ function displayComics(comics) {
 function createComicCard(comic) {
     const card = document.createElement('div');
     card.className = 'comic-card bg-white border rounded shadow p-4 cursor-pointer';
-    card.dataset.id = comic.id; // Almacena el ID del cómic en el dataset
+    card.dataset.id = comic.id; 
 
     const image = document.createElement('img');
     image.src = `${comic.thumbnail.path}.${comic.thumbnail.extension}`;
@@ -69,8 +69,8 @@ function createComicCard(comic) {
 
 function showComicDetails(comic) {
     console.log(comic);
-    const comicsContainer = document.getElementById('comics-container'); // Contenedor de las cards
-    const detailsSection = document.getElementById('comic-details'); // Sección de detalles
+    const comicsContainer = document.getElementById('comics-container'); 
+    const detailsSection = document.getElementById('comic-details'); 
     const comicImage = document.getElementById('comic-image');
     const comicTitle = document.getElementById('comic-title');
     const comicPublished = document.getElementById('comic-published');
@@ -79,9 +79,9 @@ function showComicDetails(comic) {
 
     // Asignar la información del cómic a los elementos
     comicImage.src = `${comic.thumbnail.path}.${comic.thumbnail.extension}`;
-    comicImage.alt = `${comic.title} (${comic.issueNumber})`; // Atributo alt para accesibilidad
+    comicImage.alt = `${comic.title} (${comic.issueNumber})`; 
     comicTitle.innerText = `${comic.title} (${comic.issueNumber})`;
-    comicPublished.innerText = `Publicado: ${comic.dates[0].date.split('T')[0]}`; // Formato YYYY-MM-DD
+    comicPublished.innerText = `Publicado: ${comic.dates[0].date.split('T')[0]}`; 
 
     // Asignar guionistas
     comicWriters.innerText = comic.creators.items.length > 0 
@@ -91,14 +91,14 @@ function showComicDetails(comic) {
     // Asignar descripción
     comicDescription.innerText = comic.description || 'Descripción no disponible.';
 
-    comicsContainer.classList.add('hidden'); // Oculta las cards
-    detailsSection.classList.remove('hidden'); // Muestra la sección de detalles
+    comicsContainer.classList.add('hidden'); 
+    detailsSection.classList.remove('hidden'); 
 }
 
 // Función para actualizar la paginación
 function updatePagination() {
     const paginationContainer = document.getElementById('pagination-container');
-    paginationContainer.innerHTML = ''; // Limpiar contenedor de paginación
+    paginationContainer.innerHTML = ''; 
 
     // Botón de página anterior
     if (currentPage > 0) {
@@ -116,7 +116,7 @@ function updatePagination() {
     if ((currentPage + 1) * comicsPerPage < totalComics) {
         const nextButton = document.createElement('button');
         nextButton.innerText = '>';
-        nextButton.className = 'bg-black text-white px-4 py-2 rounded mr-2 hover:bg-red-800';
+        nextButton.className = 'bg-black text-white px-4 py-2 rounded mr-2 hover:bg-red-600';
         nextButton.onclick = () => {
             currentPage++;
             fetchComics();
@@ -125,5 +125,5 @@ function updatePagination() {
     }
 }
 
-// Llamar a fetchComics al cargar la página
+
 document.addEventListener('DOMContentLoaded', fetchComics);
