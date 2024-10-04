@@ -5,27 +5,39 @@ const ts = '1';
 const hash = '32e7770ba72dfc622c150d2fc1e02ac7';
 
 let comics = []; // Variable global para almacenar los cómics
+let currentPage = 0;
+const comicsPerPage = 20;
+let totalComics = 0; // Variable para almacenar el total de cómics
 
 // Obtener cómics
-fetch(urlApi + urlMovies + `?ts=${ts}&apikey=${apiKey}&hash=${hash}`, {
-    method: 'GET',
-    headers: {
-        'Content-Type': 'application/json',
-    }
-})
-.then(response => response.json())
-.then(data => {
-    console.log(data); // Agrega este log para ver toda la respuesta
-    const comicsContainer = document.getElementById('comics-container');
-    const comics = data.data.results;
+function fetchComics() {
+    const offset = currentPage * comicsPerPage; // Calcular el offset
 
-    // Iteramos sobre los cómics y creamos una card por cada uno
+    fetch(`${urlApi}${urlMovies}?ts=${ts}&apikey=${apiKey}&hash=${hash}&limit=${comicsPerPage}&offset=${offset}`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        totalComics = data.data.total; // Guardar el total de cómics
+        displayComics(data.data.results);
+        updatePagination(); // Actualiza la paginación
+    })
+    .catch(error => console.log(error));
+}
+
+// Función para mostrar los cómics
+function displayComics(comics) {
+    const comicsContainer = document.getElementById('comics-container');
+    comicsContainer.innerHTML = ''; // Limpiar el contenedor
+
     comics.forEach(comic => {
         const comicCard = createComicCard(comic);
         comicsContainer.appendChild(comicCard);
     });
-})
-.catch(error => console.log(error));
+}
 
 // Función para crear la card del cómic
 function createComicCard(comic) {
@@ -77,22 +89,41 @@ function showComicDetails(comic) {
         : 'Guionistas: Información no disponible';
 
     // Asignar descripción
-    if (comic.description) {
-        comicDescription.innerText = comic.description;
-    } else if (comic.stories.available > 0) {
-        // Si no hay descripción, intenta obtenerla de las historias
-        const storyDescriptions = comic.stories.items.map(story => {
-            // Aquí se asume que cada historia tiene una propiedad description
-            // Asegúrate de verificar la estructura de datos que devuelve la API
-            return story.description || 'Descripción no disponible'; // Cambia esta línea si la propiedad es diferente
-        });
+    comicDescription.innerText = comic.description || 'Descripción no disponible.';
 
-        comicDescription.innerText = storyDescriptions.join(', ');
-    } else {
-        comicDescription.innerText = 'Descripción no disponible.';
-    }
-
-    // Ocultar la sección de comics y mostrar la sección de detalles
     comicsContainer.classList.add('hidden'); // Oculta las cards
     detailsSection.classList.remove('hidden'); // Muestra la sección de detalles
 }
+
+// Función para actualizar la paginación
+function updatePagination() {
+    const paginationContainer = document.getElementById('pagination-container');
+    paginationContainer.innerHTML = ''; // Limpiar contenedor de paginación
+
+    // Botón de página anterior
+    if (currentPage > 0) {
+        const prevButton = document.createElement('button');
+        prevButton.innerText = '<';
+        prevButton.className = 'bg-black text-white px-4 py-2 rounded mr-2 hover:bg-red-800';
+        prevButton.onclick = () => {
+            currentPage--;
+            fetchComics();
+        };
+        paginationContainer.appendChild(prevButton);
+    }
+
+    // Botón de página siguiente
+    if ((currentPage + 1) * comicsPerPage < totalComics) {
+        const nextButton = document.createElement('button');
+        nextButton.innerText = '>';
+        nextButton.className = 'bg-black text-white px-4 py-2 rounded mr-2 hover:bg-red-800';
+        nextButton.onclick = () => {
+            currentPage++;
+            fetchComics();
+        };
+        paginationContainer.appendChild(nextButton);
+    }
+}
+
+// Llamar a fetchComics al cargar la página
+document.addEventListener('DOMContentLoaded', fetchComics);

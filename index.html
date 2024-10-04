@@ -21,7 +21,7 @@
         </div>
     </header>
     <div class="container mx-auto">
-        <div class="flex justify-between items-center mb-4">
+        <div class="flex justify-between items-center mb-4 mt-12">
             <input type="text" placeholder="Buscar cómic..." class="border p-2 rounded w-1/2">
             <div class="flex space-x-4">
                 <select class="border p-2 rounded">
@@ -34,10 +34,12 @@
                     <option value="oldest">Más viejos</option>
                     <option value="newest">Más nuevos</option>
                 </select>
-                <button class="bg-black text-white px-4 py-2 rounded hover:bg-red-500 transition">Buscar</button>
+                <button class="bg-black text-white px-4 py-2 rounded hover:bg-red-800 transition">Buscar</button>
             </div>
         </div>
         <div id="comics-container" class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4"></div>
+        <div id="pagination-container" class="mt-4 flex justify-center"></div>
+
     
         <!-- Sección de detalles del cómic -->
         <div id="comic-details" class="hidden p-4 bg-white rounded-lg shadow-md">
