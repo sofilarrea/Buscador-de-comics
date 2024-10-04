@@ -15,8 +15,9 @@ fetch(urlApi + urlMovies + `?ts=${ts}&apikey=${apiKey}&hash=${hash}`, {
 })
 .then(response => response.json())
 .then(data => {
+    console.log(data); // Agrega este log para ver toda la respuesta
     const comicsContainer = document.getElementById('comics-container');
-    comics = data.data.results; // Almacena los cómics en la variable global
+    const comics = data.data.results;
 
     // Iteramos sobre los cómics y creamos una card por cada uno
     comics.forEach(comic => {
@@ -54,7 +55,6 @@ function createComicCard(comic) {
     return card;
 }
 
-// Función para mostrar detalles del cómic
 function showComicDetails(comic) {
     console.log(comic);
     const comicsContainer = document.getElementById('comics-container'); // Contenedor de las cards
@@ -67,13 +67,32 @@ function showComicDetails(comic) {
 
     // Asignar la información del cómic a los elementos
     comicImage.src = `${comic.thumbnail.path}.${comic.thumbnail.extension}`;
+    comicImage.alt = `${comic.title} (${comic.issueNumber})`; // Atributo alt para accesibilidad
     comicTitle.innerText = `${comic.title} (${comic.issueNumber})`;
     comicPublished.innerText = `Publicado: ${comic.dates[0].date.split('T')[0]}`; // Formato YYYY-MM-DD
-    comicWriters.innerText = `Guionistas: ${comic.creators.items.map(writer => writer.name).join(', ')}`;
-    comicDescription.innerText = comic.description || 'Descripción no disponible.';
+
+    // Asignar guionistas
+    comicWriters.innerText = comic.creators.items.length > 0 
+        ? `Guionistas: ${comic.creators.items.map(writer => writer.name).join(', ')}`
+        : 'Guionistas: Información no disponible';
+
+    // Asignar descripción
+    if (comic.description) {
+        comicDescription.innerText = comic.description;
+    } else if (comic.stories.available > 0) {
+        // Si no hay descripción, intenta obtenerla de las historias
+        const storyDescriptions = comic.stories.items.map(story => {
+            // Aquí se asume que cada historia tiene una propiedad description
+            // Asegúrate de verificar la estructura de datos que devuelve la API
+            return story.description || 'Descripción no disponible'; // Cambia esta línea si la propiedad es diferente
+        });
+
+        comicDescription.innerText = storyDescriptions.join(', ');
+    } else {
+        comicDescription.innerText = 'Descripción no disponible.';
+    }
 
     // Ocultar la sección de comics y mostrar la sección de detalles
     comicsContainer.classList.add('hidden'); // Oculta las cards
     detailsSection.classList.remove('hidden'); // Muestra la sección de detalles
 }
-

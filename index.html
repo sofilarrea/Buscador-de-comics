@@ -11,7 +11,7 @@
     <header>
         <div class="logo">
             <div class="logo-h3">
-               <p>ADA COMIC</p>
+                <a href="/index.html"><p>ADA COMIC</p></a>
             </div>
         </div>
         <div class="hero">
@@ -21,7 +21,6 @@
         </div>
     </header>
     <div class="container mx-auto">
-        <h1 class="text-4xl font-bold text-center my-8">Marvel Comics</h1>
         <div class="flex justify-between items-center mb-4">
             <input type="text" placeholder="Buscar cómic..." class="border p-2 rounded w-1/2">
             <div class="flex space-x-4">
@@ -41,13 +40,22 @@
         <div id="comics-container" class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4"></div>
     
         <!-- Sección de detalles del cómic -->
-        <div id="comic-details" class="hidden mt-8">
-            <img id="comic-image" class="w-full h-auto mb-4" alt="Comic Image">
-            <h2 id="comic-title" class="text-2xl font-bold"></h2>
-            <p id="comic-published" class="text-lg"></p>
-            <p id="comic-writers" class="text-lg"></p>
-            <p id="comic-description" class="mt-2"></p>
+        <div id="comic-details" class="hidden p-4 bg-white rounded-lg shadow-md">
+            <div class="flex">
+                <!-- Imagen del cómic -->
+                <div class="flex-shrink-0">
+                    <img id="comic-image" class="w-48 h-auto rounded" alt="Comic Cover">
+                </div>
+                <!-- Información del cómic -->
+                <div class="ml-4">
+                    <h2 id="comic-title" class="text-2xl font-bold"></h2>
+                    <p id="comic-published" class="text-gray-700"></p>
+                    <p id="comic-writers" class="text-gray-700"></p>
+                    <p id="comic-description" class="mt-2"></p>
+                </div>
+            </div>
         </div>
+        
     </div>
     
       
