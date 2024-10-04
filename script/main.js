@@ -1,26 +1,12 @@
 const urlApi = 'https://gateway.marvel.com';
-const urlPersonajes = '/v1/public/characters';
+const urlMovies = '/v1/public/comics';
 const apiKey = '65db027dcb3242c298c3482a2b3f65d4';
 const ts = '1';
 const hash = '32e7770ba72dfc622c150d2fc1e02ac7';
-const urlMovies = '/v1/public/comics'
 
-// Obtener personajes (si los necesitas)
-fetch(urlApi + urlPersonajes + `?ts=${ts}&apikey=${apiKey}&hash=${hash}`, { 
-    method: 'GET', 
-    headers: {
-        'Content-Type': 'application/json',
-       /*  'Authorization': `${apiKey}`, */
-        }
-    }    
-)
-/* .then((response) => response.json())
-.then((data) => console.log(data))
-.catch((error) => console.log(error)) */
+let comics = []; // Variable global para almacenar los cómics
 
-
-
-// Suponiendo que ya tienes el fetch funcionando y obtienes los datos de los cómics
+// Obtener cómics
 fetch(urlApi + urlMovies + `?ts=${ts}&apikey=${apiKey}&hash=${hash}`, {
     method: 'GET',
     headers: {
@@ -30,30 +16,64 @@ fetch(urlApi + urlMovies + `?ts=${ts}&apikey=${apiKey}&hash=${hash}`, {
 .then(response => response.json())
 .then(data => {
     const comicsContainer = document.getElementById('comics-container');
-    const comics = data.data.results;
+    comics = data.data.results; // Almacena los cómics en la variable global
 
     // Iteramos sobre los cómics y creamos una card por cada uno
     comics.forEach(comic => {
-        const comicCard = document.createElement('div');
-        // Añadimos clases de Tailwind para el diseño y efectos de hover
-        comicCard.classList.add('bg-white', 'shadow-lg', 'rounded', 'overflow-hidden', 'p-4', 'transform', 'transition', 'duration-300', 'hover:scale-105', 'hover:shadow-2xl');
-
-        const comicImage = document.createElement('img');
-        comicImage.src = `${comic.thumbnail.path}.${comic.thumbnail.extension}`;
-        comicImage.alt = comic.title;
-        comicImage.classList.add('w-full', 'h-64', 'object-cover');
-
-        // Creamos el título del cómic
-        const comicTitle = document.createElement('h2');
-        comicTitle.textContent = comic.title;
-        comicTitle.classList.add('mt-4', 'text-xl', 'font-bold', 'text-center');
-
-        // Agregamos la imagen y el título a la card
-        comicCard.appendChild(comicImage);
-        comicCard.appendChild(comicTitle);
-
-        // Agregamos la card al contenedor
+        const comicCard = createComicCard(comic);
         comicsContainer.appendChild(comicCard);
     });
 })
 .catch(error => console.log(error));
+
+// Función para crear la card del cómic
+function createComicCard(comic) {
+    const card = document.createElement('div');
+    card.className = 'comic-card bg-white border rounded shadow p-4 cursor-pointer';
+    card.dataset.id = comic.id; // Almacena el ID del cómic en el dataset
+
+    const image = document.createElement('img');
+    image.src = `${comic.thumbnail.path}.${comic.thumbnail.extension}`;
+    image.alt = comic.title;
+
+    const title = document.createElement('h3');
+    title.className = 'text-xl font-bold';
+    title.innerText = comic.title;
+
+    const issueNumber = document.createElement('p');
+    issueNumber.className = 'text-gray-700';
+    issueNumber.innerText = `#${comic.issueNumber}`;
+
+    card.appendChild(image);
+    card.appendChild(title);
+    card.appendChild(issueNumber);
+
+    // Agregar evento de clic a la card
+    card.addEventListener('click', () => showComicDetails(comic));
+
+    return card;
+}
+
+// Función para mostrar detalles del cómic
+function showComicDetails(comic) {
+    console.log(comic);
+    const comicsContainer = document.getElementById('comics-container'); // Contenedor de las cards
+    const detailsSection = document.getElementById('comic-details'); // Sección de detalles
+    const comicImage = document.getElementById('comic-image');
+    const comicTitle = document.getElementById('comic-title');
+    const comicPublished = document.getElementById('comic-published');
+    const comicWriters = document.getElementById('comic-writers');
+    const comicDescription = document.getElementById('comic-description');
+
+    // Asignar la información del cómic a los elementos
+    comicImage.src = `${comic.thumbnail.path}.${comic.thumbnail.extension}`;
+    comicTitle.innerText = `${comic.title} (${comic.issueNumber})`;
+    comicPublished.innerText = `Publicado: ${comic.dates[0].date.split('T')[0]}`; // Formato YYYY-MM-DD
+    comicWriters.innerText = `Guionistas: ${comic.creators.items.map(writer => writer.name).join(', ')}`;
+    comicDescription.innerText = comic.description || 'Descripción no disponible.';
+
+    // Ocultar la sección de comics y mostrar la sección de detalles
+    comicsContainer.classList.add('hidden'); // Oculta las cards
+    detailsSection.classList.remove('hidden'); // Muestra la sección de detalles
+}
+
