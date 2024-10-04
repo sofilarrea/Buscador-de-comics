@@ -5,8 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ADA COMIC</title>
     <link rel="stylesheet" href="/assets/css/style.css">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+
 </head>
-<body>
+<body class="bg-gray-200">
     <header>
         <div class="logo">
             <div class="logo-h3">
@@ -19,6 +21,38 @@
             </figure>
         </div>
     </header>
+    <div class="container mx-auto">       
+        <div class="mb-12 mt-12 flex justify-between items-center">
+          <div class="flex items-center space-x-4 w-full"> <!-- Contenedor para la barra de búsqueda -->
+            <input 
+              type="text" 
+              id="search-bar" 
+              placeholder="Search for comics..." 
+              class="w-full max-w-md px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            />
+          </div>
+      
+          <div class="flex items-center space-x-4 ml-4"> <!-- Contenedor para selects -->
+            <select id="type-select" class="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+              <option value="comics">Comics</option>
+              <option value="characters">Characters</option>
+            </select>
+            
+            <select id="sort-select" class="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+              <option value="az">A-Z</option>
+              <option value="za">Z-A</option>
+              <option value="oldest">Más viejos</option>
+              <option value="newest">Más nuevos</option>
+            </select>
+      
+            <button class="bg-black text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-colors duration-300">Buscar</button>
+          </div>
+        </div>
+      
+        <div id="comics-container" class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4"></div>
+      </div>
+      
+      
     <script src="/script/main.js"></script>
 </body>
 </html>
