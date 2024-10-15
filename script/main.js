@@ -105,7 +105,8 @@ function showComicDetails(comic) {
         ? `Guionistas: ${comic.creators.items.map(writer => writer.name).join(', ')}`
         : 'Guionistas: Información no disponible';
 
-    comicDescription.innerText = comic.description || 'Descripción no disponible.';
+        comicDescription.innerText = comic.description || 'Descripción no disponible.';
+        console.log(comic.description);
 
     comicsContainer.classList.add('hidden'); 
     detailsSection.classList.remove('hidden'); 
@@ -230,8 +231,8 @@ function fetchComicsByCharacter(characterName) {
 
 // Función para buscar todas las variantes de un personaje
 function fetchCharacterVariants(characterName) {
-    showSpinner(); // Muestra un spinner mientras carga
-    
+    showSpinner(); 
+
     const normalizedCharacterName = encodeURIComponent(characterName.trim());
 
     fetch(`${urlApi}/v1/public/characters?ts=${ts}&apikey=${apiKey}&hash=${hash}&nameStartsWith=${normalizedCharacterName}`, {
@@ -247,26 +248,11 @@ function fetchCharacterVariants(characterName) {
         return response.json();
     })
     .then(data => {
-        variantsContainer.innerHTML = ''; // Limpiar el contenedor de variantes
+        variantsContainer.innerHTML = ''; 
 
         if (data.data.results.length > 0) {
             data.data.results.forEach(variant => {
-                const variantCard = document.createElement('div');
-                variantCard.className = 'variant-card bg-gray-100 border rounded shadow p-4 m-2 inline-block cursor-pointer'; // Estilo de la tarjeta de variante
-
-                const variantImage = document.createElement('img');
-                variantImage.src = `${variant.thumbnail.path}.${variant.thumbnail.extension}`;
-                variantImage.alt = variant.name;
-                variantImage.className = 'w-24 h-36 mb-2'; // Establecer dimensiones de las miniaturas
-
-                const variantName = document.createElement('h4');
-                variantName.className = 'text-lg font-bold';
-                variantName.innerText = variant.name;
-
-                variantCard.appendChild(variantImage);
-                variantCard.appendChild(variantName);
-                variantCard.addEventListener('click', () => showComicDetails(variant)); // Cambiar aquí si deseas mostrar detalles específicos de la variante
-
+                const variantCard = createVariantCard(variant); 
                 variantsContainer.appendChild(variantCard);
             });
         } else {
@@ -282,5 +268,124 @@ function fetchCharacterVariants(characterName) {
     });
 }
 
-// Al cargar la página, buscar cómics iniciales
+// Función para crear la tarjeta de variante
+function createVariantCard(variant) {
+    const card = document.createElement('div');
+    card.className = 'variant-card bg-white border rounded shadow p-4 cursor-pointer';
+    card.dataset.id = variant.id; 
+
+    const image = document.createElement('img');
+    image.src = `${variant.thumbnail.path}.${variant.thumbnail.extension}`;
+    image.alt = variant.name;
+    image.className = 'w-full h-auto mb-2'; 
+
+    const title = document.createElement('h3');
+    title.className = 'text-xl font-bold';
+    title.innerText = variant.name;
+
+    card.appendChild(image);
+    card.appendChild(title);
+    
+    card.addEventListener('click', () => showComicDetails(variant)); 
+
+    return card;
+}
+    
 fetchComics();
+
+
+// Función para modificar la búsqueda de cómics
+searchButton.addEventListener('click', () => {
+    const searchQuery = searchInput.value.trim(); 
+    const searchType = searchTypeSelect.value; 
+    const sortOption = document.getElementById('sort-options').value; // Obtener opción de ordenamiento
+
+    if (searchQuery) {
+        if (searchType === 'comic') {
+            fetchComicsByCharacter(searchQuery, sortOption); // Pasar la opción de ordenamiento
+            variantsContainer.classList.add('hidden'); 
+            comicsContainer.classList.remove('hidden'); 
+        } else if (searchType === 'character') {
+            fetchCharacterVariants(searchQuery);
+            comicsContainer.classList.add('hidden'); 
+            variantsContainer.classList.remove('hidden'); 
+        }
+    } else {
+        alert('Por favor, ingresa un nombre para buscar');
+    }
+});
+
+// Modificar la función para buscar cómics que contienen a un personaje
+function fetchComicsByCharacter(characterName, sortOption) {
+    showSpinner();
+    
+    const normalizedCharacterName = encodeURIComponent(characterName.trim());
+
+    fetch(`${urlApi}/v1/public/characters?ts=${ts}&apikey=${apiKey}&hash=${hash}&name=${normalizedCharacterName}`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (data.data.results.length > 0) {
+            const characterId = data.data.results[0].id;
+
+            fetch(`${urlApi}/v1/public/comics?ts=${ts}&apikey=${apiKey}&hash=${hash}&characters=${characterId}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                const comics = data.data.results;
+                const sortedComics = sortComics(comics, sortOption); // Ordenar los cómics
+                displayComics(sortedComics);
+                hideSpinner();
+            })
+            .catch(error => {
+                console.log(error);
+                hideSpinner();
+            });
+        } else {
+            const comicsContainer = document.getElementById('comics-container');
+            comicsContainer.innerHTML = '';
+            const messageElement = document.createElement('p');
+            messageElement.textContent = 'No se encontró el personaje.';
+            comicsContainer.appendChild(messageElement);
+            hideSpinner();
+        }
+    })
+    .catch(error => {
+        console.log(error);
+        hideSpinner();
+    });
+}
+
+// Función para ordenar los cómics según la opción seleccionada
+function sortComics(comics, sortOption) {
+    switch (sortOption) {
+        case 'az':
+            return comics.sort((a, b) => a.title.localeCompare(b.title));
+        case 'za':
+            return comics.sort((a, b) => b.title.localeCompare(a.title));
+        case 'oldest':
+            return comics.sort((a, b) => new Date(a.dates[0].date) - new Date(b.dates[0].date));
+        case 'newest':
+            return comics.sort((a, b) => new Date(b.dates[0].date) - new Date(a.dates[0].date));
+        default:
+            return comics; // Sin ordenamiento por defecto
+    }
+}
