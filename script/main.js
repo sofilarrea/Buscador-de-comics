@@ -17,7 +17,6 @@ let currentPage = 0;
 const comicsPerPage = 20; 
 let totalComics = 0; 
 
-// Obtener cómics
 function fetchComics() {
     showSpinner();
     const offset = currentPage * comicsPerPage; 
@@ -59,7 +58,6 @@ function displayComics(comics) {
     }
 }
 
-// Función para crear la card del cómic
 function createComicCard(comic) {
     const card = document.createElement('div');
     card.className = 'comic-card bg-white border rounded shadow p-4 cursor-pointer';
@@ -121,7 +119,6 @@ function updatePagination() {
     const paginationContainer = document.getElementById('pagination-container');
     paginationContainer.innerHTML = ''; 
 
-    // Botón de página anterior
     if (currentPage > 0) {
         const prevButton = document.createElement('button');
         prevButton.innerText = '<';
@@ -133,7 +130,6 @@ function updatePagination() {
         paginationContainer.appendChild(prevButton);
     }
 
-    // Botón de página siguiente
     if ((currentPage + 1) * comicsPerPage < totalComics) {
         const nextButton = document.createElement('button');
         nextButton.innerText = '>';
@@ -146,16 +142,13 @@ function updatePagination() {
     }
 }
 
-// Busqueda de cómics
 const searchInput = document.querySelector('input[type="text"]');
 const searchTypeSelect = document.querySelector('select'); 
 const searchButton = document.querySelector('button');
 
-// Almacenar la referencia a los contenedores
 const comicsContainer = document.getElementById('comics-container');
 const variantsContainer = document.getElementById('variants-container');
 
-// Modificar la función de búsqueda
 searchButton.addEventListener('click', () => {
     const searchQuery = searchInput.value.trim(); 
     const searchType = searchTypeSelect.value; 
