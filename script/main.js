@@ -428,3 +428,78 @@ function mostrarPersonajes(personajes) {
 }
 
 // Función para obtener y mostrar los cómics
+// Función para mostrar los cómics relacionados a un personaje en toda la pantalla
+function showComicsForCharacter(characterId) {
+    // Ocultar otras secciones
+    document.getElementById('comics-container').classList.add('hidden');
+    document.getElementById('pagination-container').classList.add('hidden');
+    document.getElementById('character-details').classList.add('hidden');
+    document.getElementById('spinner').classList.remove('hidden'); // Mostrar spinner mientras carga
+
+    // También ocultar header, hero, y otras secciones no deseadas
+    document.querySelector('header').classList.add('hidden');
+    document.querySelector('.hero').classList.add('hidden'); // Oculta la sección hero si existe
+
+    // Realizar la solicitud para obtener los cómics del personaje
+    fetch(`https://gateway.marvel.com/v1/public/characters/${characterId}/comics?apikey=YOUR_API_KEY`)
+        .then(response => response.json())
+        .then(data => {
+            const comics = data.data.results;
+
+            // Limpiar el contenedor de cómics
+            const comicsContainer = document.getElementById('comics-container');
+            comicsContainer.innerHTML = ''; // Limpiar los cómics anteriores
+
+            // Recorrer los cómics y agregarlos al contenedor
+            comics.forEach(comic => {
+                const comicCard = document.createElement('div');
+                comicCard.classList.add('comic-card', 'bg-white', 'p-4', 'rounded-lg', 'shadow-md', 'w-full');
+
+                comicCard.innerHTML = `
+                    <img src="${comic.thumbnail.path}.${comic.thumbnail.extension}" alt="${comic.title}" class="w-full h-48 object-cover rounded">
+                    <h2 class="text-lg font-bold mt-2">${comic.title}</h2>
+                `;
+
+                comicsContainer.appendChild(comicCard);
+            });
+
+            // Mostrar el contenedor de cómics y ocultar el spinner
+            comicsContainer.classList.remove('hidden');
+            document.getElementById('spinner').classList.add('hidden');
+
+            // Asegurarse de que el contenedor de cómics ocupe toda la pantalla
+            comicsContainer.classList.add('w-full', 'h-screen', 'overflow-y-scroll');
+        })
+        .catch(error => {
+            console.error('Error al obtener los cómics:', error);
+            document.getElementById('spinner').classList.add('hidden');
+        });
+}
+
+// Capturar el clic en las tarjetas de personajes
+document.getElementById('characters-container').addEventListener('click', (e) => {
+    const clickedCard = e.target.closest('.character-card');
+    
+    if (clickedCard) {
+        const characterId = clickedCard.dataset.characterId; // Suponiendo que tienes el ID del personaje en data-character-id
+        showComicsForCharacter(characterId);
+    }
+});
+
+// Agregar evento de clic a las tarjetas de personajes
+document.getElementById('characters-container').addEventListener('click', (e) => {
+    const clickedCard = e.target.closest('.character-card');
+    
+    if (clickedCard) {
+        const characterId = clickedCard.dataset.characterId; // Suponiendo que la tarjeta tiene el ID del personaje en data-character-id
+        showComicsForCharacter(characterId);
+    }
+});
+// Suponiendo que "variantCard" es la tarjeta del personaje que se va a ocultar
+const variantCard = document.getElementById('variants-container');
+
+variantCard.addEventListener('click', function() {
+    variantCard.style.display = 'none';   // Ocultar la tarjeta del personaje
+    const comicDetail = document.getElementById('comic-details');
+    comicDetail.style.display = 'block';   // Mostrar la sección de detalles del cómic
+});

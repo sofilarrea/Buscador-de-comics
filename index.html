@@ -24,8 +24,7 @@
     </header> 
     <div id="spinner" class="hidden">
         <div class="loader"></div>
-    </div>
-    
+    </div>    
     <div class="container mx-auto">
         <div class="flex justify-between items-center mb-4 mt-12">
             <input type="text" placeholder="Buscar cómic..." class="border p-2 rounded w-1/2">
@@ -45,17 +44,13 @@
         </div>
         <div id="comics-container" class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4"></div>
         <div id="pagination-container" class="mt-4 flex justify-center"></div>
-        <div id="variants-container" class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-4"></div>
-
-    
+        <div id="variants-container" class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-4"></div>    
         <!-- Sección de detalles del cómic -->
         <div id="comic-details" class="hidden p-4 bg-white rounded-lg shadow-md">
             <div class="flex">
-                <!-- Imagen del cómic -->
                 <div class="flex-shrink-0">
                     <img id="comic-image" class="w-48 h-auto rounded" alt="Comic Cover">
                 </div>
-                <!-- Información del cómic -->
                 <div class="ml-4">
                     <h2 id="comic-title" class="text-2xl font-bold"></h2>
                     <p id="comic-published" class="text-gray-700"></p>
@@ -63,34 +58,25 @@
                     <p id="comic-description" class="mt-2"></p>
                     <div id="stories-container" class="mt-4"></div>
                     <div id="comics-container"></div>
-
                 </div>
             </div>
-        </div>
-        
+        </div>        
     </div>
     <!-- Sección de detalles del personaje -->
 <div id="character-details" class="hidden p-4 bg-white rounded-lg shadow-md">
     <div class="flex">
-        <!-- Imagen del personaje -->
         <div class="flex-shrink-0">
             <img id="character-image" class="w-48 h-auto rounded" alt="Character Image">
         </div>
-        <!-- Información del personaje -->
         <div class="ml-4">
             <h2 id="character-name" class="text-2xl font-bold"></h2>
             <p id="character-origin" class="text-gray-700"></p>
             <p id="character-powers" class="text-gray-700"></p>
             <p id="character-description" class="mt-2"></p>
             <div id="characters-container" class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-4"></div>
-
-
         </div>
     </div>
-</div>
-
-      
-      
+</div>     
     <script src="/script/main.js"></script>
 </body>
 </html>
