@@ -88,28 +88,41 @@ function createComicCard(comic) {
 }
 
 function showComicDetails(comic) {
-    const comicsContainer = document.getElementById('comics-container'); 
-    const detailsSection = document.getElementById('comic-details'); 
+    const comicsContainer = document.getElementById('comics-container');
+    const detailsSection = document.getElementById('comic-details');
     const comicImage = document.getElementById('comic-image');
     const comicTitle = document.getElementById('comic-title');
     const comicPublished = document.getElementById('comic-published');
     const comicWriters = document.getElementById('comic-writers');
     const comicDescription = document.getElementById('comic-description');
 
-    comicImage.src = `${comic.thumbnail.path}.${comic.thumbnail.extension}`;
-    comicImage.alt = `${comic.title} (${comic.issueNumber})`; 
-    comicTitle.innerText = `${comic.title} (${comic.issueNumber})`;
-    comicPublished.innerText = `Publicado: ${comic.dates[0].date.split('T')[0]}`; 
+    // Verificar si los datos del cómic están disponibles antes de usarlos
+    const thumbnailPath = comic.thumbnail?.path || ''; 
+    const thumbnailExtension = comic.thumbnail?.extension || 'jpg'; // Asumir jpg si no está disponible
+    comicImage.src = `${thumbnailPath}.${thumbnailExtension}`;
+    comicImage.alt = `${comic.title || 'Comic sin título'} (${comic.issueNumber || 'N/A'})`;
 
-    comicWriters.innerText = comic.creators.items.length > 0 
+    comicTitle.innerText = `${comic.title || 'Título no disponible'} (${comic.issueNumber || 'N/A'})`;
+
+    // Verificar si hay fechas disponibles
+    const publishedDate = comic.dates?.[0]?.date ? comic.dates[0].date.split('T')[0] : 'Fecha no disponible';
+    comicPublished.innerText = `Publicado: ${publishedDate}`;
+
+    // Verificar si hay guionistas
+    comicWriters.innerText = comic.creators?.items?.length > 0
         ? `Guionistas: ${comic.creators.items.map(writer => writer.name).join(', ')}`
         : 'Guionistas: Información no disponible';
 
-        comicDescription.innerText = comic.description || 'Descripción no disponible.';
-        console.log(comic.description);
+    // Verificar si hay descripción
+    comicDescription.innerText = comic.description || 'Descripción no disponible.';
+    console.log(comic.description);
 
-    comicsContainer.classList.add('hidden'); 
-    detailsSection.classList.remove('hidden'); 
+    // Ocultar la lista de cómics y mostrar los detalles
+    comicsContainer.classList.add('hidden');
+    
+    // Asegúrate de que el contenedor de detalles esté visible
+    detailsSection.classList.remove('hidden');
+    detailsSection.classList.add('block'); // Asegurarte de que la sección esté visible
 }
 
 // Función para actualizar la paginación
@@ -386,6 +399,32 @@ function sortComics(comics, sortOption) {
         case 'newest':
             return comics.sort((a, b) => new Date(b.dates[0].date) - new Date(a.dates[0].date));
         default:
-            return comics; // Sin ordenamiento por defecto
-    }
+            return comics; 
 }
+}
+// Suponiendo que tienes una función que obtiene los personajes de una API
+async function obtenerPersonajes(query) {
+    const respuesta = await fetch(`https://api.example.com/personajes?name=${query}`);
+    const data = await respuesta.json();
+    return data.personajes; // Ajusta según cómo la API devuelva los personajes
+}
+
+// Función para mostrar los personajes en el HTML
+function mostrarPersonajes(personajes) {
+    const contenedorPersonajes = document.getElementById('characters-container');
+    contenedorPersonajes.innerHTML = ''; // Limpiar los personajes anteriores
+
+    personajes.forEach(personaje => {
+        const personajeCard = document.createElement('div');
+        personajeCard.classList.add('personaje-card', 'border', 'rounded', 'p-4', 'shadow-md');
+        personajeCard.setAttribute('data-id', personaje.id); // Guardar el ID del personaje
+        personajeCard.innerHTML = `
+            <h2 class="text-xl font-bold">${personaje.name}</h2>
+            <img src="${personaje.image}" alt="${personaje.name}" class="w-full h-auto rounded mt-2">
+        `;
+        personajeCard.addEventListener('click', () => mostrarComicsRelacionados(personaje.id));
+        contenedorPersonajes.appendChild(personajeCard);
+    });
+}
+
+// Función para obtener y mostrar los cómics
